@@ -166,8 +166,7 @@ function sellTickets(/* queue */) {
 function Rectangle(width, height) {
   this.width = width;
   this.height = height;
-
-  this.getArea = function () {
+  Rectangle.prototype.getArea = function getArea() {
     return this.width * this.height;
   };
 }
