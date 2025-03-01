@@ -34,8 +34,17 @@ function shallowCopy(obj) {
  *    mergeObjects([{a: 1, b: 2}, {b: 3, c: 5}]) => {a: 1, b: 5, c: 5}
  *    mergeObjects([]) => {}
  */
-function mergeObjects(/* objects */) {
-  throw new Error('Not implemented');
+function mergeObjects(objects) {
+  const result = {};
+  objects.forEach((obj) => {
+    Object.entries(obj).forEach(([key, value]) => {
+      if (!result[key]) {
+        result[key] = 0;
+      }
+      result[key] += value;
+    });
+  });
+  return result;
 }
 
 /**
@@ -146,8 +155,43 @@ function makeWord(lettersObject) {
  *    sellTickets([25, 25, 50]) => true
  *    sellTickets([25, 100]) => false (The seller does not have enough money to give change.)
  */
-function sellTickets(/* queue */) {
-  throw new Error('Not implemented');
+function sellTickets(queue) {
+  const obj = {
+    25: 0,
+    50: 0,
+    100: 0,
+  };
+  for (let i = 0; i < queue.length; i += 1) {
+    obj[queue[i]] += 1;
+    const rent = queue[i] - 25;
+    if (rent === 25) {
+      if (obj[25] !== 0) {
+        obj[25] -= 1;
+      } else {
+        return false;
+      }
+    }
+    if (rent === 50) {
+      if (obj[50] !== 0) {
+        obj[50] -= 1;
+      } else if (obj[25] >= 2) {
+        obj[25] -= 2;
+      } else {
+        return false;
+      }
+    }
+    if (rent === 75) {
+      if (obj[50] !== 0 && obj[25] !== 0) {
+        obj[50] -= 1;
+        obj[25] -= 1;
+      } else if (obj[25] >= 3) {
+        obj[25] -= 3;
+      } else {
+        return false;
+      }
+    }
+  }
+  return true;
 }
 
 /**
@@ -196,8 +240,8 @@ function getJSON(obj) {
  *    const r = fromJSON(Circle.prototype, '{"radius":10}');
  *
  */
-function fromJSON(/* proto, json */) {
-  throw new Error('Not implemented');
+function fromJSON(proto, json) {
+  return JSON.parse(proto, json);
 }
 
 /**
@@ -226,8 +270,13 @@ function fromJSON(/* proto, json */) {
  *      { country: 'Russia',  city: 'Saint Petersburg' }
  *    ]
  */
-function sortCitiesArray(/* arr */) {
-  throw new Error('Not implemented');
+function sortCitiesArray(arr) {
+  return arr.sort((a, b) => {
+    if (a.country === b.country) {
+      return a.city.localeCompare(b.city);
+    }
+    return a.country.localeCompare(b.country);
+  });
 }
 
 /**
@@ -260,8 +309,17 @@ function sortCitiesArray(/* arr */) {
  *    "Poland" => ["Lodz"]
  *   }
  */
-function group(/* array, keySelector, valueSelector */) {
-  throw new Error('Not implemented');
+function group(array, keySelector, valueSelector) {
+  const map = new Map();
+  const arrCountry = array.map(keySelector);
+  const arrCity = array.map(valueSelector);
+  for (let i = 0; i < array.length; i += 1) {
+    if (!map.has(arrCountry[i])) {
+      map.set(arrCountry[i], []);
+    }
+    map.get(arrCountry[i]).push(arrCity[i]);
+  }
+  return map;
 }
 
 /**
@@ -319,32 +377,48 @@ function group(/* array, keySelector, valueSelector */) {
  */
 
 const cssSelectorBuilder = {
-  element(/* value */) {
-    throw new Error('Not implemented');
+  arr: [],
+  element(value) {
+    this.arr.push(value);
+    return this;
   },
 
-  id(/* value */) {
-    throw new Error('Not implemented');
+  id(value) {
+    this.arr.push(`#${value}`);
+    return this;
   },
 
-  class(/* value */) {
-    throw new Error('Not implemented');
+  class(value) {
+    this.arr.push(`.${value}`);
+    return this;
   },
 
-  attr(/* value */) {
-    throw new Error('Not implemented');
+  attr(value) {
+    this.arr.push(`[${value}]`);
+    return this;
   },
 
-  pseudoClass(/* value */) {
-    throw new Error('Not implemented');
+  pseudoClass(value) {
+    this.arr.push(`:${value}`);
+    return this;
   },
 
-  pseudoElement(/* value */) {
-    throw new Error('Not implemented');
+  pseudoElement(value) {
+    this.arr.push(`::${value}`);
+    return this;
   },
 
-  combine(/* selector1, combinator, selector2 */) {
-    throw new Error('Not implemented');
+  combine(selector1, combinator, selector2) {
+    const combinedSelector = Object.create(cssSelectorBuilder);
+    combinedSelector.arr.push(
+      `${selector1.stringify()} ${combinator} ${selector2.stringify()}`
+    );
+    return combinedSelector;
+  },
+  stringify() {
+    const result = this.arr.join('');
+    this.arr = [];
+    return result;
   },
 };
 
