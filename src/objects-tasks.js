@@ -241,7 +241,7 @@ function getJSON(obj) {
  *
  */
 function fromJSON(proto, json) {
-  return JSON.parse(proto, json);
+  return Object.setPrototypeOf(JSON.parse(json), proto);
 }
 
 /**
@@ -377,48 +377,32 @@ function group(array, keySelector, valueSelector) {
  */
 
 const cssSelectorBuilder = {
-  arr: [],
-  element(value) {
-    this.arr.push(value);
-    return this;
+  element(/* value */) {
+    throw new Error('Not implemented');
   },
 
-  id(value) {
-    this.arr.push(`#${value}`);
-    return this;
+  id(/* value */) {
+    throw new Error('Not implemented');
   },
 
-  class(value) {
-    this.arr.push(`.${value}`);
-    return this;
+  class(/* value */) {
+    throw new Error('Not implemented');
   },
 
-  attr(value) {
-    this.arr.push(`[${value}]`);
-    return this;
+  attr(/* value */) {
+    throw new Error('Not implemented');
   },
 
-  pseudoClass(value) {
-    this.arr.push(`:${value}`);
-    return this;
+  pseudoClass(/* value */) {
+    throw new Error('Not implemented');
   },
 
-  pseudoElement(value) {
-    this.arr.push(`::${value}`);
-    return this;
+  pseudoElement(/* value */) {
+    throw new Error('Not implemented');
   },
 
-  combine(selector1, combinator, selector2) {
-    const combinedSelector = Object.create(cssSelectorBuilder);
-    combinedSelector.arr.push(
-      `${selector1.stringify()} ${combinator} ${selector2.stringify()}`
-    );
-    return combinedSelector;
-  },
-  stringify() {
-    const result = this.arr.join('');
-    this.arr = [];
-    return result;
+  combine(/* selector1, combinator, selector2 */) {
+    throw new Error('Not implemented');
   },
 };
 
